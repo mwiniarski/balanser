@@ -3,6 +3,6 @@ services:
   hello:
     image: busybox
     command:
-      sh -c 'while true; do nc -lp 8000 -e echo -e "HTTP/1.1 200 OK\r\n\r\n{\"msg\":\"hello\",\"host\":\"$$HOSTNAME\"}"; done'
+      sh -c 'while true; do echo -e "HTTP/1.1 200 OK\r\n\r\n{\"msg\":\"hello\",\"host\":\"$$HOSTNAME\"}" | nc -lp 8000; done'
     ports:
       - 8000-8002:8000
