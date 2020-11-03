@@ -40,21 +40,37 @@ pub fn init() -> Yaml {
     file.read_to_string(&mut contents).expect("Unable to read the config file");
     let config = &YamlLoader::load_from_str(&contents).unwrap()[0];
 
-    // Load config from cmd line args
-    let args: Vec<String> = env::args().collect();
-    let mut args_hash_map = Hash::new();
-    for arg in args {
-        if arg.contains("=") {
-            // key=value
-            let (key, value) = arg.split_at(arg.find('=').unwrap());
-            args_hash_map.insert(Yaml::from_str(key), Yaml::from_str(remove_first_char(&value).unwrap()));
+    let mut hash_map = Hash::new();
+
+    // Load config from env vars
+    for (key, value) in env::vars() {
+        let key_str = key.to_string();
+        let key_yaml = Yaml::from_str(&key_str);
+        let key_lowercase_yaml = Yaml::from_str(&key_str.to_lowercase());
+        if config.as_hash().unwrap().contains_key(&key_yaml) {
+            hash_map.insert(key_yaml, Yaml::from_str(&value.to_string()));
+        }
+        else if config.as_hash().unwrap().contains_key(&key_lowercase_yaml) {
+            hash_map.insert(key_lowercase_yaml, Yaml::from_str(&value.to_string()));
         }
         else {
-            // key=true
-            args_hash_map.insert(Yaml::from_str(&arg), Yaml::Boolean(true));
+            hash_map.insert(key_yaml, Yaml::from_str(&value.to_string()));
         }
     }
-    let args_hash = Yaml::Hash(args_hash_map);
+
+    // Load config from cmd line args and env vars
+    let args: Vec<String> = env::args().collect();
+    for arg in args {
+        if arg.contains("=") {
+            let (key, value) = arg.split_at(arg.find('=').unwrap());
+            hash_map.insert(Yaml::from_str(key), Yaml::from_str(remove_first_char(&value).unwrap()));
+        }
+        else {
+            hash_map.insert(Yaml::from_str(&arg), Yaml::Boolean(true));
+        }
+    }
+
+    let args_hash = Yaml::Hash(hash_map);
     let config_args = merge_docs(config.clone(), args_hash);
 
     return config_args;
