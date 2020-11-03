@@ -71,7 +71,5 @@ pub fn init() -> Yaml {
     }
 
     let args_hash = Yaml::Hash(hash_map);
-    let config_args = merge_docs(config.clone(), args_hash);
-
-    config_args
+    merge_docs(config.clone(), args_hash)
 }
