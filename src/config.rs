@@ -11,7 +11,7 @@ fn merge_hashes(mut left_hash: Hash, right_hash: Hash) -> Yaml {
     right_hash.into_iter().for_each(|(key, value)| {
         left_hash.insert(key, value);
     });
-    return Yaml::Hash(left_hash);
+    Yaml::Hash(left_hash)
 }
 
 fn merge_hash(left: Hash, right: Yaml) -> Yaml {
@@ -61,7 +61,7 @@ pub fn init() -> Yaml {
     // Load config from cmd line args
     let args: Vec<String> = env::args().collect();
     for arg in args {
-        if arg.contains("=") {
+        if arg.contains('=') {
             let (key, value) = arg.split_at(arg.find('=').unwrap());
             hash_map.insert(Yaml::from_str(key), Yaml::from_str(remove_first_char(&value).unwrap()));
         }
@@ -73,5 +73,5 @@ pub fn init() -> Yaml {
     let args_hash = Yaml::Hash(hash_map);
     let config_args = merge_docs(config.clone(), args_hash);
 
-    return config_args;
+    config_args
 }
