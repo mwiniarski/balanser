@@ -32,7 +32,7 @@ fn remove_first_char(s: &str) -> Option<&str> {
     s.chars().next().map(|c| &s[c.len_utf8()..])
 }
 
-/// Loads the configuration (from the config.yaml file, cmd line args)
+/// Loads the configuration (from the config.yaml file, cmd line args, env vars)
 pub fn init() -> Yaml {
     // Load config from file
     let mut file = File::open("config.yaml").expect("Unable to open the config file");
