@@ -58,7 +58,7 @@ pub fn init() -> Yaml {
         }
     }
 
-    // Load config from cmd line args and env vars
+    // Load config from cmd line args
     let args: Vec<String> = env::args().collect();
     for arg in args {
         if arg.contains("=") {
