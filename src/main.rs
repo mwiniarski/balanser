@@ -4,6 +4,7 @@ use std::convert::Infallible;
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{Body, Request, Response, Server, Client, Uri};
 
+mod config;
 
 const SERVERS: [&str; 4] = [
     "http://127.0.0.1:8000", // Only using this one for now
@@ -18,7 +19,9 @@ async fn handle(_: Request<Body>) -> Result<Response<Body>, hyper::Error> {
 
 #[tokio::main]
 async fn main() {
-    let addr = SocketAddr::from(([127, 0, 0, 1], 7000));
+    let configs = config::init();
+    let listen_address = configs["listen_address"].as_str().unwrap();
+    let addr: SocketAddr = listen_address.parse().expect("Unable to parse listen address");
 
     println!("Listening on {}...", addr);
 
